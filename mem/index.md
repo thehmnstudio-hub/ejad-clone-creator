@@ -1,0 +1,1 @@
+- [Fathom + GSuite Sync](mem://integrations/fathom-and-gsuite-sync) — Unified lead_communications timeline, Fathom webhook, GSuite DWD sync every 15 min

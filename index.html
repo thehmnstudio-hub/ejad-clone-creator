@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#ba3873" />
+
+    <!-- Cache hint for CDN/browser: HTML safe to cache 5min at edge, revalidate after -->
+    <meta http-equiv="Cache-Control" content="public, max-age=0, s-maxage=300, stale-while-revalidate=86400" />
+
+    <title>Ejad Labs - Your Gateway to Global Business Access</title>
+    <meta name="description" content="Pakistan's leading platform for global market access, US company formations and US/EU visa consultation. Runs Future Fest tech festival">
+    <meta name="author" content="Ejad Labs" />
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
+
+    <!-- Self-hosted variable fonts (saves ~90KB blocking CSS + 4 round-trips vs Google Fonts) -->
+    <link rel="preload" href="/fonts/PlusJakartaSans-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/DMSans-Variable.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- Per-route LCP preload. Injected client-side so /inc, /visa, etc. don't
+         waste bytes downloading the silicon-valley hero image. -->
+    <script>
+      (function(){
+        var p = location.pathname;
+        function preload(href, srcset, sizes){
+          var l = document.createElement('link');
+          l.rel = 'preload'; l.as = 'image'; l.href = href;
+          if (srcset) l.setAttribute('imagesrcset', srcset);
+          if (sizes) l.setAttribute('imagesizes', sizes);
+          l.setAttribute('fetchpriority', 'high');
+          document.head.appendChild(l);
+        }
+        if (p === '/silicon-valley' || p === '/silicon-valley/') {
+          preload('/golden-gate-800w.webp',
+            '/golden-gate-400w.webp 400w, /golden-gate-800w.webp 800w, /golden-gate.webp 1200w',
+            '(max-width: 640px) 400px, (max-width: 1024px) 800px, 1200px');
+        }
+      })();
+    </script>
+
+    <!-- Inlined critical CSS: paints body+font before main stylesheet arrives, eliminates render-blocking flash -->
+    <style>
+      @font-face{font-family:'Plus Jakarta Sans';src:url('/fonts/PlusJakartaSans-Variable.woff2') format('woff2-variations');font-weight:200 800;font-style:normal;font-display:swap}
+      @font-face{font-family:'DM Sans';src:url('/fonts/DMSans-Variable.woff2') format('woff2-variations');font-weight:200 800;font-style:normal;font-display:swap}
+      *,*::before,*::after{box-sizing:border-box;border-width:0;border-style:solid}
+      html,body{margin:0;padding:0;background:#ffffff;color:#1c1c1c;font-family:'DM Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+      #root{min-height:100vh}
+      /* Hero shell — paints before React hydrates so LCP fires on the static <img>.
+         React mounts the real <Hero> into #root and this shell is removed. */
+      .sv-shell{padding:6rem 1rem 2rem;background:linear-gradient(to bottom,hsl(333 54% 47% / .10),hsl(36 95% 52% / .10),#fff)}
+      .sv-shell-inner{max-width:72rem;margin:0 auto}
+      .sv-shell-img{display:block;width:100%;height:300px;object-fit:cover;border-radius:1rem;box-shadow:0 20px 25px -5px rgb(0 0 0 / .12),0 8px 10px -6px rgb(0 0 0 / .08)}
+      @media (min-width:768px){.sv-shell-img{height:400px}}
+      .sv-shell-text{text-align:center;max-width:56rem;margin:2rem auto 0}
+      .sv-shell-h1{font-family:'Plus Jakarta Sans','DM Sans',system-ui,sans-serif;font-weight:700;font-size:clamp(1.75rem,3.5vw + .5rem,3.25rem);line-height:1.12;letter-spacing:-.025em;margin:1rem 0}
+      .sv-shell-p{font-size:1rem;color:hsl(220 8% 46%);max-width:42rem;margin:0 auto 2rem;line-height:1.6}
+      .sv-shell-badges{display:flex;flex-direction:column;align-items:center;gap:.75rem;margin-bottom:1.5rem}
+      .sv-shell-badge{display:inline-block;padding:.5rem 1rem;border-radius:9999px;font-size:.8125rem;font-weight:500}
+      .sv-shell-badge.b1{background:hsl(333 54% 47% / .10);border:1px solid hsl(333 54% 47% / .30);color:hsl(333 60% 36%)}
+      .sv-shell-badge.b2{background:hsl(333 54% 47%);color:#fff}
+      /* INC hero shell — pure-text hero, no image, paints instantly. */
+      .inc-shell{padding:5rem 1rem 2rem;background:linear-gradient(to bottom,hsl(333 54% 47% / .05),#fff)}
+      .inc-shell-inner{max-width:56rem;margin:0 auto;text-align:center}
+      .inc-shell-h1{font-family:'Plus Jakarta Sans','DM Sans',system-ui,sans-serif;font-weight:700;font-size:clamp(1.875rem,4vw + .5rem,3.75rem);line-height:1.12;letter-spacing:-.025em;margin:0 0 1rem}
+      .inc-shell-h1 em{font-style:normal;color:hsl(333 54% 47%)}
+      .inc-shell-p{font-size:1rem;color:hsl(220 8% 46%);max-width:42rem;margin:0 auto 2rem;line-height:1.6}
+      .inc-shell-cta{display:inline-block;padding:1rem 3rem;border-radius:.5rem;background:hsl(333 54% 47%);color:#fff;font-weight:600;font-size:1.0625rem;text-decoration:none;box-shadow:0 10px 15px -3px rgb(0 0 0 / .1)}
+    </style>
+
+    <!-- Meta Pixel — DEFERRED. We init the pixel queue stub immediately so any
+         fbq() calls from React buffer correctly, but we delay loading the heavy
+         99KB fbevents.js bundle until either:
+           (a) the user makes a first interaction (touch/scroll/click/key), OR
+           (b) the browser is idle for ~2.5s after load.
+         This keeps the LCP path free of 3rd-party JS while still firing
+         PageView and downstream events. Only fires on funnel routes. -->
+    <script>
+      (function(){
+        var p = window.location.pathname;
+        var pixelMap = {
+          '/silicon-valley': '565795723285628',
+          '/silicon-valley/success': '565795723285628',
+          '/inc': '666896539751889',
+          '/inc/success': '666896539751889',
+          '/visa': '2515428995576619',
+          '/visa/success': '2515428995576619'
+        };
+        var pixelId = pixelMap[p];
+        if (!pixelId) return;
+
+        var f = window, b = document, e = 'script';
+        var n = f.fbq = function(){ n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments) };
+        if (!f._fbq) f._fbq = n;
+        n.push = n; n.loaded = false; n.version = '2.0'; n.queue = [];
+        fbq('init', pixelId);
+        fbq('track', 'PageView');
+
+        var loaded = false;
+        function loadPixel(){
+          if (loaded) return; loaded = true;
+          cleanup();
+          var t = b.createElement(e); t.async = true;
+          t.src = 'https://connect.facebook.net/en_US/fbevents.js';
+          var s = b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t, s);
+        }
+        function cleanup(){
+          ['pointerdown','touchstart','keydown','scroll'].forEach(function(ev){
+            window.removeEventListener(ev, loadPixel, { passive: true, capture: true });
+          });
+        }
+        // Trigger A: first user interaction (scroll/touch/click/key)
+        ['pointerdown','touchstart','keydown','scroll'].forEach(function(ev){
+          window.addEventListener(ev, loadPixel, { passive: true, capture: true });
+        });
+        // Trigger B: 3s after window.load (well past LCP measurement window)
+        function armFallback(){ setTimeout(loadPixel, 3000); }
+        if (document.readyState === 'complete') armFallback();
+        else window.addEventListener('load', armFallback, { once: true });
+      })();
+    </script>
+
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/SGMglzCn0Zaelf5KnUBhZqCNc9p2/social-images/social-1762235293802-667aa5c9ee2d6fd897d7d664_IMG_3298-min.jpg">
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@lovable_dev" />
+    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/SGMglzCn0Zaelf5KnUBhZqCNc9p2/social-images/social-1762235293802-667aa5c9ee2d6fd897d7d664_IMG_3298-min.jpg">
+
+    <meta property="og:title" content="Ejad Labs - Your Gateway to Global Business Access">
+    <meta name="twitter:title" content="Ejad Labs - Your Gateway to Global Business Access">
+    <meta property="og:description" content="Pakistan&#39;s leading platform for global market access, US company formations and US/EU visa consultation. Runs Future Fest tech festival">
+    <meta name="twitter:description" content="Pakistan&#39;s leading platform for global market access, US company formations and US/EU visa consultation. Runs Future Fest tech festival">
+  </head>
+
+  <body>
+    <div id="root">
+      <!-- Static hero shell: ships in HTML so LCP renders before JS executes.
+           React replaces this entire #root subtree on mount via createRoot().
+           Only emitted for /silicon-valley to avoid FOUC on other routes. -->
+      <script>
+        var __p = location.pathname;
+        if (__p === '/silicon-valley' || __p === '/silicon-valley/') {
+          document.getElementById('root').innerHTML =
+            '<section class="sv-shell">' +
+              '<div class="sv-shell-inner">' +
+                '<img class="sv-shell-img" src="/golden-gate-800w.webp" ' +
+                  'srcset="/golden-gate-400w.webp 400w, /golden-gate-800w.webp 800w, /golden-gate.webp 1200w" ' +
+                  'sizes="(max-width: 640px) 400px, (max-width: 1024px) 800px, 1200px" ' +
+                  'alt="Golden Gate Bridge" width="1200" height="400" fetchpriority="high" decoding="async">' +
+                '<div class="sv-shell-text">' +
+                  '<div class="sv-shell-badges">' +
+                    '<span class="sv-shell-badge b1">Applications Open</span>' +
+                    '<span class="sv-shell-badge b2">5 - 18 October 2026</span>' +
+                  '</div>' +
+                  '<h1 class="sv-shell-h1">Silicon Valley Tech Exchange</h1>' +
+                  '<p class="sv-shell-p">2-week immersion across San Francisco &amp; Los Angeles — anchored by the 15th Pakistan Tech Summit, SF Tech Week, and LA Tech Week.</p>' +
+                '</div>' +
+              '</div>' +
+            '</section>';
+        } else if (__p === '/inc' || __p === '/inc/') {
+          document.getElementById('root').innerHTML =
+            '<section class="inc-shell">' +
+              '<div class="inc-shell-inner">' +
+                '<h1 class="inc-shell-h1">Get a Physical Bank Account in <em>America</em></h1>' +
+                '<p class="inc-shell-p">Complete US company formation with LLC, C-Corp registration, and physical bank account setup</p>' +
+                '<a class="inc-shell-cta" href="#pricing">Apply Today</a>' +
+              '</div>' +
+            '</section>';
+        }
+      </script>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
