@@ -372,10 +372,30 @@ serve(async (req) => {
       throw new Error(`Failed to append to sheet: ${JSON.stringify(appendResult)}`);
     }
 
-    // Also insert into leads table
+    // Also insert into leads table with lead-type/stage/status defaults + duplicate detection
     try {
-      await sb.from('leads').insert({
-        funnel: formData.sheetName || 'Company Formation',
+      const leadTypeName = formData.sheetName || 'Company Formation';
+      const { data: existingDuplicate } = await sb
+        .from('leads')
+        .select('id')
+        .or(`email.eq.${formData.email || ''},phone.eq.${formData.phone || ''}`)
+        .limit(1)
+        .maybeSingle();
+
+      const { data: leadType } = await sb
+        .from('lead_types')
+        .select('id,name,default_status_id,manual_review_before_outreach')
+        .eq('name', leadTypeName)
+        .maybeSingle();
+
+      const { data: firstStage } = leadType?.id
+        ? await sb.from('lead_stages').select('id').eq('lead_type_id', leadType.id).eq('is_active', true).order('position', { ascending: true }).limit(1).maybeSingle()
+        : { data: null as any };
+
+      const { data: duplicateStatus } = await sb.from('lead_statuses').select('id').eq('name', 'Duplicate').maybeSingle();
+
+      const leadInsert: Record<string, any> = {
+        funnel: leadTypeName,
         full_name: formData.fullName,
         email: formData.email,
         phone: formData.phone || null,
@@ -417,7 +437,26 @@ serve(async (req) => {
         ip_hash: ipHash || null,
         submitted_ip: submittedIp || null,
         raw_data: formData as any,
-      });
+        lead_type_id: leadType?.id || null,
+        lead_stage_id: firstStage?.id || null,
+        lead_status_id: existingDuplicate ? (duplicateStatus?.id || null) : (leadType?.default_status_id || null),
+        source: 'website',
+        utm_ad_set: (formData as any).utm_ad_set || null,
+        utm_ad_name: (formData as any).utm_ad_name || null,
+        duplicate_of_lead_id: existingDuplicate?.id || null,
+        duplicate_needs_review: !!existingDuplicate,
+        stage_entered_at: new Date().toISOString(),
+      };
+
+      const { data: createdLead } = await sb.from('leads').insert(leadInsert).select('id').maybeSingle();
+
+      if (createdLead?.id) {
+        await sb.from('lead_source_activities').insert({
+          lead_id: createdLead.id,
+          source: 'website_form_submit',
+          payload: { utm_campaign: formData.utm_campaign || null, utm_ad_set: (formData as any).utm_ad_set || null, utm_ad_name: (formData as any).utm_ad_name || null }
+        });
+      }
     } catch {
       // DB insert is non-blocking; the sheet append already succeeded
     }

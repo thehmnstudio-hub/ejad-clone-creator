@@ -14,12 +14,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Users, CalendarDays, LogOut, UsersRound, KanbanSquare, ListTodo, TrendingUp, Wallet, BarChart2, Sparkles, Package } from "lucide-react";
+import { LayoutDashboard, Users, CalendarDays, LogOut, UsersRound, KanbanSquare, ListTodo, TrendingUp, Wallet, BarChart2, Sparkles, Package, SlidersHorizontal } from "lucide-react";
 import { getUnreadCount } from "@/pages/admin/Changelog";
 
 const navItems = [
   { title: "Dashboard",    url: "/admin",               icon: LayoutDashboard },
   { title: "Contacts",     url: "/admin/contacts",      icon: Users },
+  { title: "Lead Settings", url: "/admin/leads",         icon: SlidersHorizontal },
   { title: "Tasks",        url: "/admin/tasks",         icon: ListTodo },
   { title: "Deals",        url: "/admin/deals",         icon: TrendingUp },
   { title: "Applications", url: "/admin/applications",  icon: KanbanSquare },
