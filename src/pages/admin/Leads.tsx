@@ -4,9 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Search, ChevronLeft, ChevronRight, Download, Upload, Eye, Plus, Trash2 } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Download, Upload, Eye, Plus, Trash2, Info } from "lucide-react";
 import { LeadDetailDrawer } from "@/components/admin/LeadDetailDrawer";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,6 +19,14 @@ const PAGE_SIZE_OPTIONS = [20, 100, 500, 1000];
 type LeadType = any;
 type LeadStage = any;
 type LeadStatus = any;
+
+const STATUS_SWATCHES = ["#64748b", "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#ec4899"];
+
+const normalizeHex = (value: string) => {
+  const v = value.trim().toLowerCase();
+  if (!v) return "#64748b";
+  return v.startsWith("#") ? v : `#${v}`;
+};
 
 const Leads = () => {
   const { toast } = useToast();
@@ -35,6 +47,10 @@ const Leads = () => {
 
   const [newLeadTypeName, setNewLeadTypeName] = useState("");
   const [newStatusName, setNewStatusName] = useState("");
+
+  const [editingStatusId, setEditingStatusId] = useState<string | null>(null);
+  const [statusForm, setStatusForm] = useState<any>(null);
+  const [nameConflict, setNameConflict] = useState(false);
 
   const fetchConfigs = async () => {
     try {
@@ -96,20 +112,30 @@ const Leads = () => {
     if (!s?.id) return;
     const { error } = await (supabase as any).from("lead_statuses").update({ ...s, updated_at: new Date().toISOString() }).eq("id", s.id);
     if (error) return toast({ title: "Save status failed", description: error.message, variant: "destructive" });
-  const saveLeadType = async (t: LeadType) => {
-    await (supabase as any).from("lead_types").update({ ...t, updated_at: new Date().toISOString() }).eq("id", t.id);
-    fetchConfigs();
+    await fetchConfigs();
   };
 
-  const saveStage = async (s: LeadStage) => {
-    await (supabase as any).from("lead_stages").update({ ...s, updated_at: new Date().toISOString() }).eq("id", s.id);
-    fetchConfigs();
+
+  const startStatusEdit = (s: LeadStatus) => {
+    setEditingStatusId(s.id);
+    setStatusForm({
+      ...s,
+      description: s.description || "",
+      color: s.color || "#64748b",
+      is_active: s.is_active ?? true,
+      locks_stage_movement: s.locks_stage_movement ?? false,
+    });
   };
 
-  const saveStatus = async (s: LeadStatus) => {
-    await (supabase as any).from("lead_statuses").update({ ...s, updated_at: new Date().toISOString() }).eq("id", s.id);
-    fetchConfigs();
-  };
+  useEffect(() => {
+    if (!statusForm?.name) {
+      setNameConflict(false);
+      return;
+    }
+    const candidate = statusForm.name.trim().toLowerCase();
+    const duplicate = leadStatuses.some((s) => s.id !== editingStatusId && (s.name || "").trim().toLowerCase() === candidate);
+    setNameConflict(duplicate);
+  }, [statusForm?.name, leadStatuses, editingStatusId]);
 
   const handleExport = () => {};
   const handleImport = async () => { setImporting(true); try { const { data, error } = await supabase.functions.invoke("import-sheet-data"); if (error) throw error; toast({ title: "Import Complete", description: `Imported ${data?.totalImported || 0} leads.` }); setPage(0); } catch (err: any) { toast({ title: "Import Failed", description: err.message, variant: "destructive" }); } finally { setImporting(false); } };
@@ -157,15 +183,18 @@ const Leads = () => {
 
     <Card>
       <CardHeader><CardTitle>Lead Statuses (global)</CardTitle></CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className="space-y-3">
         <div className="flex gap-2"><Input placeholder="New status" value={newStatusName} onChange={(e)=>setNewStatusName(e.target.value)} /><Button onClick={async()=>{if(!newStatusName.trim()) return; const { error } = await (supabase as any).from("lead_statuses").insert({name:newStatusName.trim(),color:"#64748b",is_active:true}); if (error) return toast({ title: "Add status failed", description: error.message, variant: "destructive" }); toast({ title: "Status added" }); setNewStatusName(""); fetchConfigs();}}><Plus className="h-4 w-4 mr-1"/>Add Status</Button></div>
-        <div className="flex gap-2"><Input placeholder="New status" value={newStatusName} onChange={(e)=>setNewStatusName(e.target.value)} /><Button onClick={async()=>{if(!newStatusName.trim()) return; await (supabase as any).from("lead_statuses").insert({name:newStatusName.trim(),color:"#64748b",is_active:true}); setNewStatusName(""); fetchConfigs();}}><Plus className="h-4 w-4 mr-1"/>Add Status</Button></div>
-        {leadStatuses.map((s)=><div key={s.id} className="border rounded p-2 grid md:grid-cols-5 gap-2 items-center">
-          <Input value={s.name} onChange={(e)=>setLeadStatuses(prev=>prev.map(x=>x.id===s.id?{...x,name:e.target.value}:x))} onBlur={()=>saveStatus(leadStatuses.find(x=>x.id===s.id))} />
-          <Input value={s.color || ""} onChange={(e)=>setLeadStatuses(prev=>prev.map(x=>x.id===s.id?{...x,color:e.target.value}:x))} onBlur={()=>saveStatus(leadStatuses.find(x=>x.id===s.id))} />
-          <Input value={s.description || ""} placeholder="Meaning" onChange={(e)=>setLeadStatuses(prev=>prev.map(x=>x.id===s.id?{...x,description:e.target.value}:x))} onBlur={()=>saveStatus(leadStatuses.find(x=>x.id===s.id))} />
-          <Badge variant="secondary">{s.locks_stage_movement ? "Stage Locked" : "Movable"}</Badge>
-          <Button variant="ghost" size="icon" onClick={async()=>{await (supabase as any).from("lead_statuses").delete().eq("id",s.id); fetchConfigs();}}><Trash2 className="h-4 w-4" /></Button>
+        {leadStatuses.map((s)=><div key={s.id} className="border rounded p-3 space-y-3">
+          {editingStatusId !== s.id ? <div className="flex items-center justify-between gap-2"><div className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: s.color || '#64748b' }} /><Badge variant="secondary" style={{ borderColor: s.color || '#64748b' }}>{s.name}</Badge><Badge variant="outline">{s.is_active ? 'Active' : 'Inactive'}</Badge></div><div className="flex gap-2"><Button variant="outline" size="sm" onClick={()=>startStatusEdit(s)}>Edit</Button><Button variant="ghost" size="icon" onClick={async()=>{await (supabase as any).from("lead_statuses").delete().eq("id",s.id); fetchConfigs();}}><Trash2 className="h-4 w-4" /></Button></div></div> : <div className="space-y-3">
+            {statusForm?.is_system && <Alert><Info className="h-4 w-4" /><AlertDescription>This is a system status. Name cannot be changed.</AlertDescription></Alert>}
+            <div><Label>Status Name *</Label><Input value={statusForm?.name || ''} readOnly={!!statusForm?.is_system} onChange={(e)=>setStatusForm((prev:any)=>({...prev,name:e.target.value}))} />{nameConflict && <p className="text-xs text-destructive mt-1">Status name must be unique.</p>}</div>
+            <div className="space-y-2"><Label>Color *</Label><div className="flex flex-wrap gap-2">{STATUS_SWATCHES.map((c)=><button key={c} type="button" className="h-6 w-6 rounded border" style={{ backgroundColor: c }} onClick={()=>setStatusForm((prev:any)=>({...prev,color:c}))} />)}</div><Input value={statusForm?.color || ''} onChange={(e)=>setStatusForm((prev:any)=>({...prev,color:normalizeHex(e.target.value)}))} placeholder="#64748b" /><div className="flex items-center gap-2 text-sm"><span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: statusForm?.color || '#64748b' }} /><span className="px-2 py-0.5 rounded-full border" style={{ borderColor: statusForm?.color || '#64748b', color: statusForm?.color || '#64748b' }}>{statusForm?.name || 'Status preview'}</span></div></div>
+            <div><Label>Description</Label><Textarea maxLength={300} value={statusForm?.description || ''} onChange={(e)=>setStatusForm((prev:any)=>({...prev,description:e.target.value}))} /><p className="text-xs text-muted-foreground">{(statusForm?.description || '').length}/300</p></div>
+            <div className="space-y-1"><div className="flex items-center justify-between"><div><p className="text-sm font-medium">Prevent stage changes while this status is set</p><p className="text-xs text-muted-foreground">e.g. use for 'Duplicate' or 'On Hold' to freeze the lead</p></div><Switch checked={!!statusForm?.locks_stage_movement} onCheckedChange={(v)=>setStatusForm((prev:any)=>({...prev,locks_stage_movement:v}))} /></div></div>
+            <div className="flex items-center justify-between"><Label>Active</Label><Switch checked={!!statusForm?.is_active} onCheckedChange={(v)=>setStatusForm((prev:any)=>({...prev,is_active:v}))} /></div>
+            <div className="flex justify-end gap-2"><Button variant="outline" onClick={()=>{setEditingStatusId(null);setStatusForm(null);setNameConflict(false);}}>Cancel</Button><Button disabled={!statusForm?.name?.trim() || nameConflict} onClick={async()=>{await saveStatus(statusForm); setEditingStatusId(null); setStatusForm(null);}}>Save</Button></div>
+          </div>}
         </div>)}
       </CardContent>
     </Card>
