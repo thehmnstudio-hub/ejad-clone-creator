@@ -8,8 +8,10 @@ import { WhatsAppChat } from "./WhatsAppChat";
 import WhatsAppCallUI from "./WhatsAppCallUI";
 import { ChatPanelProvider, useChatPanel } from "@/hooks/useChatPanel";
 import { useWhatsAppCall } from "@/hooks/useWhatsAppCall";
-import { Loader2, MessageSquare, X } from "lucide-react";
+import { Loader2, MessageSquare, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { AddLeadForm } from "@/components/admin/AddLeadForm";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -21,6 +23,7 @@ function AdminContent() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const { isOpen, toggle, totalUnread } = useChatPanel();
+  const [leadSheetOpen, setLeadSheetOpen] = useState(false);
   const { callState, callInfo, duration, isMuted, acceptCall, rejectCall, terminateCall, toggleMute } = useWhatsAppCall();
 
   useEffect(() => {
@@ -98,11 +101,15 @@ function AdminContent() {
             <img src="/ejad-labs-logo.png" alt="Ejad Labs" className="h-6" />
             <span className="text-xs font-semibold text-foreground tracking-wide">HQ</span>
             <div className="ml-auto">
+              <Button variant="default" size="sm" onClick={() => setLeadSheetOpen(true)} className="gap-2 h-8 text-xs ml-2">
+                <Plus className="h-3.5 w-3.5" />
+                <span>+ Lead</span>
+              </Button>
               <Button
                 variant={isOpen ? "default" : "outline"}
                 size="sm"
                 onClick={toggle}
-                className="gap-2 h-8 text-xs relative"
+                className="gap-2 h-8 text-xs relative ml-2"
               >
                 {isOpen ? <X className="h-3.5 w-3.5" /> : <MessageSquare className="h-3.5 w-3.5" />}
                 <span className="hidden sm:inline">WhatsApp</span>
@@ -151,6 +158,16 @@ function AdminContent() {
         onTerminate={terminateCall}
         onToggleMute={toggleMute}
       />
+      <Sheet open={leadSheetOpen} onOpenChange={setLeadSheetOpen}>
+        <SheetContent className="sm:max-w-2xl overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Add Lead</SheetTitle>
+          </SheetHeader>
+          <div className="mt-4">
+            <AddLeadForm embedded onClose={() => setLeadSheetOpen(false)} />
+          </div>
+        </SheetContent>
+      </Sheet>
     </SidebarProvider>
   );
 }
