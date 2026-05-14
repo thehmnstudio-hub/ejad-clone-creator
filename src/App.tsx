@@ -50,6 +50,8 @@ const Changelog = lazy(() => import("./pages/admin/Changelog"));
 const Assets = lazy(() => import("./pages/admin/Assets"));
 const Leads = lazy(() => import("./pages/admin/Leads"));
 const LeadStatuses = lazy(() => import("./pages/admin/LeadStatuses"));
+const LeadStages = lazy(() => import("./pages/admin/LeadStages"));
+const LeadTypes = lazy(() => import("./pages/admin/LeadTypes"));
 
 const App = () => {
   // Auto-reload once if a stale chunk hash 404s (post-deploy blank screen guard)
@@ -107,7 +109,7 @@ const App = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/payment" element={<Payment />} />
-            <Route path="/settings/lead-configuration/statuses" element={<Navigate to="/admin/settings/lead-configuration/statuses" replace />} />
+            <Route path="/settings/lead-configuration/lead-types" element={<LeadTypes />} />
 
             {/* Admin Portal */}
             <Route path="/admin/login" element={<AdminLogin />} />
@@ -124,7 +126,7 @@ const App = () => {
               <Route path="calendar" element={<Calendar />} />
               <Route path="team" element={<Team />} />
               <Route path="leads" element={<Leads />} />
-              <Route path="settings/lead-configuration/statuses" element={<LeadStatuses />} />
+              <Route path="settings/lead-configuration/stages" element={<LeadStages />} />
               <Route path="appointments" element={<Navigate to="/admin/calendar" replace />} />
             </Route>
 
