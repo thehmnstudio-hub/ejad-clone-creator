@@ -100,31 +100,24 @@ const Leads = () => {
   };
 
   const handleExport = () => {};
+
   const handleImport = async () => { setImporting(true); try { const { data, error } = await supabase.functions.invoke("import-sheet-data"); if (error) throw error; toast({ title: "Import Complete", description: `Imported ${data?.totalImported || 0} leads.` }); setPage(0); } catch (err: any) { toast({ title: "Import Failed", description: err.message, variant: "destructive" }); } finally { setImporting(false); } };
 
   return <div className="space-y-4">
     <Card>
       <CardHeader><CardTitle>Lead Type Manager</CardTitle></CardHeader>
       <CardContent className="space-y-3">
-        <div className="flex gap-2">
-          <Input placeholder="New lead type name" value={newLeadTypeName} onChange={(e) => setNewLeadTypeName(e.target.value)} />
-          <Button onClick={async () => {
-            if (!newLeadTypeName.trim()) return;
-            const { error } = await (supabase as any).from("lead_types").insert({ name: newLeadTypeName.trim(), default_currency: "USD", is_active: true });
-            if (error) return toast({ title: "Create failed", description: error.message, variant: "destructive" });
-            toast({ title: "Lead type added" });
-            setNewLeadTypeName("");
-            fetchConfigs();
-          }}><Plus className="h-4 w-4 mr-1" />Add Type</Button>
-        </div>
+        <div className="flex justify-end"><Button><Plus className="h-4 w-4 mr-1" />Create Lead Type</Button></div>
         <div className="grid md:grid-cols-2 gap-3">
           {leadTypes.map((t) => <div key={t.id} className={`border rounded p-3 space-y-2 ${selectedTypeId===t.id ? "ring-2 ring-primary" : ""}`}>
             <div className="flex justify-between items-center">
               <Button variant="ghost" onClick={() => setSelectedTypeId(t.id)}>{t.name}</Button>
-              <Button variant="ghost" size="icon" onClick={async()=>{await (supabase as any).from("lead_types").delete().eq("id",t.id); if (selectedTypeId===t.id) setSelectedTypeId(""); fetchConfigs();}}><Trash2 className="h-4 w-4" /></Button>
+              <div className="flex gap-1">
+                <Button variant="outline" size="sm">Edit</Button>
+                <Button variant="ghost" size="icon" onClick={async()=>{await (supabase as any).from("lead_types").delete().eq("id",t.id); if (selectedTypeId===t.id) setSelectedTypeId(""); fetchConfigs();}}><Trash2 className="h-4 w-4" /></Button>
+              </div>
             </div>
-            <Input value={t.description || ""} placeholder="Description" onChange={(e)=>setLeadTypes(prev=>prev.map(x=>x.id===t.id?{...x,description:e.target.value}:x))} onBlur={()=>saveLeadType(leadTypes.find(x=>x.id===t.id))} />
-            <div className="grid grid-cols-2 gap-2"><Input value={t.default_team || ""} placeholder="Default team" onChange={(e)=>setLeadTypes(prev=>prev.map(x=>x.id===t.id?{...x,default_team:e.target.value}:x))} onBlur={()=>saveLeadType(leadTypes.find(x=>x.id===t.id))} /><Input value={t.default_currency || "USD"} placeholder="Currency" onChange={(e)=>setLeadTypes(prev=>prev.map(x=>x.id===t.id?{...x,default_currency:e.target.value}:x))} onBlur={()=>saveLeadType(leadTypes.find(x=>x.id===t.id))} /></div>
+            <p className="text-xs text-muted-foreground line-clamp-2">{t.description || 'No description'}</p>
           </div>)}
         </div>
       </CardContent>

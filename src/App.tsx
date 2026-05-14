@@ -50,6 +50,7 @@ const Changelog = lazy(() => import("./pages/admin/Changelog"));
 const Assets = lazy(() => import("./pages/admin/Assets"));
 const Leads = lazy(() => import("./pages/admin/Leads"));
 const LeadStages = lazy(() => import("./pages/admin/LeadStages"));
+const LeadTypes = lazy(() => import("./pages/admin/LeadTypes"));
 
 const App = () => {
   // Auto-reload once if a stale chunk hash 404s (post-deploy blank screen guard)
@@ -107,6 +108,7 @@ const App = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/payment" element={<Payment />} />
+            <Route path="/settings/lead-configuration/lead-types" element={<LeadTypes />} />
 
             {/* Admin Portal */}
             <Route path="/admin/login" element={<AdminLogin />} />
