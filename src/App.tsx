@@ -49,6 +49,7 @@ const Analytics = lazy(() => import("./pages/admin/Analytics"));
 const Changelog = lazy(() => import("./pages/admin/Changelog"));
 const Assets = lazy(() => import("./pages/admin/Assets"));
 const Leads = lazy(() => import("./pages/admin/Leads"));
+const LeadStatuses = lazy(() => import("./pages/admin/LeadStatuses"));
 const LeadStages = lazy(() => import("./pages/admin/LeadStages"));
 const LeadTypes = lazy(() => import("./pages/admin/LeadTypes"));
 
