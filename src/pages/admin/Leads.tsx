@@ -96,18 +96,6 @@ const Leads = () => {
     if (!s?.id) return;
     const { error } = await (supabase as any).from("lead_statuses").update({ ...s, updated_at: new Date().toISOString() }).eq("id", s.id);
     if (error) return toast({ title: "Save status failed", description: error.message, variant: "destructive" });
-  const saveLeadType = async (t: LeadType) => {
-    await (supabase as any).from("lead_types").update({ ...t, updated_at: new Date().toISOString() }).eq("id", t.id);
-    fetchConfigs();
-  };
-
-  const saveStage = async (s: LeadStage) => {
-    await (supabase as any).from("lead_stages").update({ ...s, updated_at: new Date().toISOString() }).eq("id", s.id);
-    fetchConfigs();
-  };
-
-  const saveStatus = async (s: LeadStatus) => {
-    await (supabase as any).from("lead_statuses").update({ ...s, updated_at: new Date().toISOString() }).eq("id", s.id);
     fetchConfigs();
   };
 
