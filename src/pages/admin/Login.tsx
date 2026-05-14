@@ -75,8 +75,8 @@ const AdminLogin = () => {
     setLoading(true);
     try {
       if (mode === "signup") {
-        if (!email.endsWith("@ejadlabs.com")) {
-          toast({ title: "Invalid Email", description: "Only @ejadlabs.com emails are allowed.", variant: "destructive" });
+        if (!email.endsWith("@etaps.me")) {
+          toast({ title: "Invalid Email", description: "Only @etaps.me emails are allowed.", variant: "destructive" });
           return;
         }
         const { error } = await supabase.auth.signUp({
@@ -118,7 +118,7 @@ const AdminLogin = () => {
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: `${window.location.origin}/admin/login`,
-        extraParams: { hd: "ejadlabs.com", prompt: "select_account" },
+        extraParams: { hd: "etaps.me", prompt: "select_account" },
       });
       if (result.error) {
         toast({ title: "Login Failed", description: String(result.error), variant: "destructive" });
@@ -178,7 +178,7 @@ const AdminLogin = () => {
             )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="you@ejadlabs.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Input id="email" type="email" placeholder="you@etaps.me" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
