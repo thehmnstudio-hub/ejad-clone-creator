@@ -928,6 +928,92 @@ export type Database = {
           },
         ]
       }
+      lead_stages: {
+        Row: {
+          color: string
+          created_at: string
+          description: string | null
+          entry_conditions: string | null
+          exit_trigger: string | null
+          id: string
+          is_active: boolean
+          lead_type_id: string
+          name: string
+          position: number
+          sla_hours: number | null
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          entry_conditions?: string | null
+          exit_trigger?: string | null
+          id?: string
+          is_active?: boolean
+          lead_type_id: string
+          name: string
+          position?: number
+          sla_hours?: number | null
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          entry_conditions?: string | null
+          exit_trigger?: string | null
+          id?: string
+          is_active?: boolean
+          lead_type_id?: string
+          name?: string
+          position?: number
+          sla_hours?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_stages_lead_type_id_fkey"
+            columns: ["lead_type_id"]
+            isOneToOne: false
+            referencedRelation: "lead_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_statuses: {
+        Row: {
+          color: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          locks_stage_movement: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          locks_stage_movement?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          locks_stage_movement?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lead_tag_assignments: {
         Row: {
           assigned_by: string | null
@@ -1017,6 +1103,39 @@ export type Database = {
           priority?: Database["public"]["Enums"]["task_priority"]
           status?: Database["public"]["Enums"]["task_status"]
           title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      lead_types: {
+        Row: {
+          created_at: string
+          default_currency: string
+          default_team: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          default_currency?: string
+          default_team?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          default_currency?: string
+          default_team?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
           updated_at?: string
         }
         Relationships: []
