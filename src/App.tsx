@@ -49,6 +49,7 @@ const Analytics = lazy(() => import("./pages/admin/Analytics"));
 const Changelog = lazy(() => import("./pages/admin/Changelog"));
 const Assets = lazy(() => import("./pages/admin/Assets"));
 const Leads = lazy(() => import("./pages/admin/Leads"));
+const LeadStages = lazy(() => import("./pages/admin/LeadStages"));
 const LeadTypes = lazy(() => import("./pages/admin/LeadTypes"));
 
 const App = () => {
@@ -124,6 +125,7 @@ const App = () => {
               <Route path="calendar" element={<Calendar />} />
               <Route path="team" element={<Team />} />
               <Route path="leads" element={<Leads />} />
+              <Route path="settings/lead-configuration/stages" element={<LeadStages />} />
               <Route path="appointments" element={<Navigate to="/admin/calendar" replace />} />
             </Route>
 
