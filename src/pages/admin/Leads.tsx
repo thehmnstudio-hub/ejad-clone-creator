@@ -96,6 +96,18 @@ const Leads = () => {
     if (!s?.id) return;
     const { error } = await (supabase as any).from("lead_statuses").update({ ...s, updated_at: new Date().toISOString() }).eq("id", s.id);
     if (error) return toast({ title: "Save status failed", description: error.message, variant: "destructive" });
+  const saveLeadType = async (t: LeadType) => {
+    await (supabase as any).from("lead_types").update({ ...t, updated_at: new Date().toISOString() }).eq("id", t.id);
+    fetchConfigs();
+  };
+
+  const saveStage = async (s: LeadStage) => {
+    await (supabase as any).from("lead_stages").update({ ...s, updated_at: new Date().toISOString() }).eq("id", s.id);
+    fetchConfigs();
+  };
+
+  const saveStatus = async (s: LeadStatus) => {
+    await (supabase as any).from("lead_statuses").update({ ...s, updated_at: new Date().toISOString() }).eq("id", s.id);
     fetchConfigs();
   };
 
@@ -134,6 +146,7 @@ const Leads = () => {
       <CardHeader><CardTitle>Lead Stages (per selected type)</CardTitle></CardHeader>
       <CardContent className="space-y-2">
         <div className="flex gap-2"><Select value={selectedTypeId} onValueChange={setSelectedTypeId}><SelectTrigger className="w-[280px]"><SelectValue placeholder="Select lead type" /></SelectTrigger><SelectContent>{leadTypes.map((t)=><SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}</SelectContent></Select><Button variant="outline" onClick={async()=>{if(!selectedTypeId) return; const { error } = await (supabase as any).from("lead_stages").insert({lead_type_id:selectedTypeId,name:"New Stage",position:stagesForSelectedType.length+1,color:"#3b82f6",is_active:true}); if (error) return toast({ title: "Add stage failed", description: error.message, variant: "destructive" }); toast({ title: "Stage added" }); fetchConfigs();}}><Plus className="h-4 w-4 mr-1"/>Add Stage</Button></div>
+        <div className="flex gap-2"><Select value={selectedTypeId} onValueChange={setSelectedTypeId}><SelectTrigger className="w-[280px]"><SelectValue placeholder="Select lead type" /></SelectTrigger><SelectContent>{leadTypes.map((t)=><SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}</SelectContent></Select><Button variant="outline" onClick={async()=>{if(!selectedTypeId) return; await (supabase as any).from("lead_stages").insert({lead_type_id:selectedTypeId,name:"New Stage",position:stagesForSelectedType.length+1,color:"#3b82f6",is_active:true}); fetchConfigs();}}><Plus className="h-4 w-4 mr-1"/>Add Stage</Button></div>
         {stagesForSelectedType.map((s, i)=><div key={s.id} className="border rounded p-2 space-y-2">
           <div className="grid md:grid-cols-4 gap-2"><Input value={s.name} onChange={(e)=>setLeadStages(prev=>prev.map(x=>x.id===s.id?{...x,name:e.target.value}:x))} onBlur={()=>saveStage(leadStages.find(x=>x.id===s.id))} /><Input value={s.color || ""} onChange={(e)=>setLeadStages(prev=>prev.map(x=>x.id===s.id?{...x,color:e.target.value}:x))} onBlur={()=>saveStage(leadStages.find(x=>x.id===s.id))} placeholder="#3b82f6" /><Input type="number" value={s.position} onChange={(e)=>setLeadStages(prev=>prev.map(x=>x.id===s.id?{...x,position:Number(e.target.value)}:x))} onBlur={()=>saveStage(leadStages.find(x=>x.id===s.id))} /><Button variant="ghost" size="icon" onClick={async()=>{await (supabase as any).from("lead_stages").delete().eq("id",s.id); fetchConfigs();}}><Trash2 className="h-4 w-4" /></Button></div>
           <Input value={s.description || ""} placeholder="Stage description" onChange={(e)=>setLeadStages(prev=>prev.map(x=>x.id===s.id?{...x,description:e.target.value}:x))} onBlur={()=>saveStage(leadStages.find(x=>x.id===s.id))} />
@@ -146,6 +159,7 @@ const Leads = () => {
       <CardHeader><CardTitle>Lead Statuses (global)</CardTitle></CardHeader>
       <CardContent className="space-y-2">
         <div className="flex gap-2"><Input placeholder="New status" value={newStatusName} onChange={(e)=>setNewStatusName(e.target.value)} /><Button onClick={async()=>{if(!newStatusName.trim()) return; const { error } = await (supabase as any).from("lead_statuses").insert({name:newStatusName.trim(),color:"#64748b",is_active:true}); if (error) return toast({ title: "Add status failed", description: error.message, variant: "destructive" }); toast({ title: "Status added" }); setNewStatusName(""); fetchConfigs();}}><Plus className="h-4 w-4 mr-1"/>Add Status</Button></div>
+        <div className="flex gap-2"><Input placeholder="New status" value={newStatusName} onChange={(e)=>setNewStatusName(e.target.value)} /><Button onClick={async()=>{if(!newStatusName.trim()) return; await (supabase as any).from("lead_statuses").insert({name:newStatusName.trim(),color:"#64748b",is_active:true}); setNewStatusName(""); fetchConfigs();}}><Plus className="h-4 w-4 mr-1"/>Add Status</Button></div>
         {leadStatuses.map((s)=><div key={s.id} className="border rounded p-2 grid md:grid-cols-5 gap-2 items-center">
           <Input value={s.name} onChange={(e)=>setLeadStatuses(prev=>prev.map(x=>x.id===s.id?{...x,name:e.target.value}:x))} onBlur={()=>saveStatus(leadStatuses.find(x=>x.id===s.id))} />
           <Input value={s.color || ""} onChange={(e)=>setLeadStatuses(prev=>prev.map(x=>x.id===s.id?{...x,color:e.target.value}:x))} onBlur={()=>saveStatus(leadStatuses.find(x=>x.id===s.id))} />
