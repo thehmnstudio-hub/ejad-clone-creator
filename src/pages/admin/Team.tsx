@@ -115,16 +115,26 @@ const Team = () => {
   };
 
   const handleRoleChange = async (userId: string, newRole: string) => {
-    const { error } = await supabase
+    // user_roles has UNIQUE(user_id, role) — a user can have multiple rows.
+    // UPDATE .eq("user_id") hits all rows and violates the constraint on the 2nd row,
+    // or silently updates 0 rows when RLS blocks it. Delete+insert is the safe pattern.
+    const { error: delErr } = await supabase
       .from("user_roles")
-      .update({ role: newRole as any })
+      .delete()
       .eq("user_id", userId);
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      setMembers((prev) => prev.map((m) => (m.id === userId ? { ...m, role: newRole } : m)));
-      toast({ title: "Role updated" });
+    if (delErr) {
+      toast({ title: "Error", description: delErr.message, variant: "destructive" });
+      return;
     }
+    const { error: insErr } = await supabase
+      .from("user_roles")
+      .insert({ user_id: userId, role: newRole as any });
+    if (insErr) {
+      toast({ title: "Error", description: insErr.message, variant: "destructive" });
+      return;
+    }
+    setMembers((prev) => prev.map((m) => (m.id === userId ? { ...m, role: newRole } : m)));
+    toast({ title: "Role updated" });
   };
 
   const handleAvatarUpload = async (userId: string, file: File) => {
