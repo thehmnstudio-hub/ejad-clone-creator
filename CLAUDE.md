@@ -2,6 +2,14 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Git & PR Workflow — REQUIRED
+
+After every push to a feature branch, **always**:
+1. Create a pull request on GitHub (using the GitHub MCP tools)
+2. Immediately merge it into `main` using the squash method
+
+Do this automatically without waiting to be asked.
+
 ## What This Project Is
 
 Ejad Labs HQ is a dual-purpose application:
