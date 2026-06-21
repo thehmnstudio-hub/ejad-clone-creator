@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { lazy, Suspense, useEffect } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import ScrollToTop from "./components/ScrollToTop";
 import { UTMCapture } from "./components/UTMCapture";
 import { HQRedirect } from "./components/HQRedirect";
@@ -7,6 +7,31 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
+
+// Shows a reload prompt instead of a blank screen when a lazy chunk fails to load
+class ChunkErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center gap-3">
+          <p className="text-sm text-muted-foreground">Page failed to load.</p>
+          <button className="text-sm text-primary underline" onClick={() => window.location.reload()}>
+            Reload
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -92,6 +117,7 @@ const App = () => {
         <ScrollToTop />
         <UTMCapture />
         <HQRedirect />
+        <ChunkErrorBoundary>
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
           <Routes>
             <Route path="/" element={<Index />} />
@@ -134,6 +160,7 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
+        </ChunkErrorBoundary>
       </BrowserRouter>
     </TooltipProvider>
     </QueryClientProvider>

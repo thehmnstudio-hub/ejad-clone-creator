@@ -50,49 +50,53 @@ export function useWhatsAppCall() {
   // Ringtone management
   const startRingtone = useCallback(() => {
     try {
+      // Stop any existing ringtone before starting a new one
       if (ringtoneRef.current) {
-        ringtoneRef.current.pause();
+        (ringtoneRef.current as any).__stopRing?.();
         ringtoneRef.current = null;
       }
       const audioCtx = new AudioContext();
-      const createRing = () => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.frequency.value = 440;
-        osc.type = "sine";
-        gain.gain.value = 0.3;
-        return { osc, gain, ctx: audioCtx };
-      };
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.frequency.value = 440;
+      osc.type = "sine";
+      gain.gain.value = 0;
 
       let playing = true;
-      const ring = createRing();
 
-      const playPattern = () => {
+      // Schedule the gain/frequency envelope for one ring cycle.
+      // osc.start() is called once before this; the oscillator runs
+      // continuously and gain modulation creates the ring pattern.
+      const scheduleRing = () => {
         if (!playing) return;
-        ring.osc.start();
-        ring.osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-        ring.osc.frequency.setValueAtTime(480, audioCtx.currentTime + 0.25);
-        ring.osc.frequency.setValueAtTime(440, audioCtx.currentTime + 0.5);
-        ring.osc.frequency.setValueAtTime(480, audioCtx.currentTime + 0.75);
-        ring.gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        ring.gain.gain.setValueAtTime(0, audioCtx.currentTime + 1);
-        ring.gain.gain.setValueAtTime(0.3, audioCtx.currentTime + 3);
-        ring.gain.gain.setValueAtTime(0, audioCtx.currentTime + 4);
+        const t = audioCtx.currentTime;
+        gain.gain.cancelScheduledValues(t);
+        osc.frequency.setValueAtTime(440, t);
+        osc.frequency.setValueAtTime(480, t + 0.25);
+        osc.frequency.setValueAtTime(440, t + 0.5);
+        osc.frequency.setValueAtTime(480, t + 0.75);
+        gain.gain.setValueAtTime(0.3, t);
+        gain.gain.setValueAtTime(0, t + 1);
+        gain.gain.setValueAtTime(0.3, t + 3);
+        gain.gain.setValueAtTime(0, t + 4);
       };
 
-      playPattern();
+      osc.start();
+      scheduleRing();
       const interval = setInterval(() => {
         if (!playing) { clearInterval(interval); return; }
-        playPattern();
+        scheduleRing();
       }, 6000);
 
       const fakeAudio = new Audio();
       (fakeAudio as any).__stopRing = () => {
         playing = false;
         clearInterval(interval);
-        try { ring.osc.stop(); } catch {}
+        gain.gain.cancelScheduledValues(audioCtx.currentTime);
+        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        try { osc.stop(); } catch {}
         try { audioCtx.close(); } catch {}
       };
       ringtoneRef.current = fakeAudio;
@@ -107,6 +111,11 @@ export function useWhatsAppCall() {
       ringtoneRef.current = null;
     }
   }, []);
+
+  // Ensure ringing is always stopped when call state leaves "ringing"
+  useEffect(() => {
+    if (callState !== "ringing") stopRingtone();
+  }, [callState, stopRingtone]);
 
   // Duration timer
   useEffect(() => {

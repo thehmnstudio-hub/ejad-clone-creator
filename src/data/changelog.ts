@@ -19,6 +19,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: "2026-06-21",
+    version: "v2.1.1",
+    items: [
+      { category: "fix", text: "Team page: assigning a role (e.g. CSR) to a user now persists correctly after page refresh — was silently failing due to a constraint conflict on the roles table" },
+      { category: "fix", text: "Incoming call ringtone now stops immediately when the call is answered, instead of continuing to ring" },
+      { category: "fix", text: "Admin pages no longer show a blank screen after a deployment update — a reload prompt is shown instead" },
+    ],
+  },
+  {
     date: "2026-05-05",
     version: "v2.1.0",
     items: [
