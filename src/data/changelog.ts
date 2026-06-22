@@ -23,6 +23,8 @@ export const changelog: ChangelogEntry[] = [
     version: "v2.1.2",
     items: [
       { category: "fix", text: "Kanban and pipeline views: moving a lead or deal to a new status now correctly persists after page refresh — was silently failing when the database rejected the update without showing an error" },
+      { category: "fix", text: "Lead drawer: changes to follow-up date and pain point now show an error if the save is rejected, instead of silently failing" },
+      { category: "fix", text: "Contacts bulk status and owner reassignment now shows an error when the update fails, and only applies the change to rows that were actually updated" },
     ],
   },
   {

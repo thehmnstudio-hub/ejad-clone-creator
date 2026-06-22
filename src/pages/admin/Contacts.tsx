@@ -416,18 +416,36 @@ const Contacts = () => {
 
   const bulkUpdateStatus = async (status: string) => {
     const ids = Array.from(selectedIds);
-    await supabase.from("leads").update({ lead_status: status, updated_at: new Date().toISOString() }).in("id", ids);
-    setLeads((prev) => prev.map((l) => (selectedIds.has(l.id) ? { ...l, lead_status: status } : l)));
-    toast({ title: `Updated ${ids.length} contacts`, description: `Status set to ${status}` });
+    const { data, error } = await supabase
+      .from("leads")
+      .update({ lead_status: status, updated_at: new Date().toISOString() })
+      .in("id", ids)
+      .select("id");
+    if (error || !data?.length) {
+      toast({ title: "Bulk update failed", description: error?.message || "Permission denied", variant: "destructive" });
+      return;
+    }
+    const updatedIds = new Set(data.map((r: any) => r.id));
+    setLeads((prev) => prev.map((l) => (updatedIds.has(l.id) ? { ...l, lead_status: status } : l)));
+    toast({ title: `Updated ${data.length} contacts`, description: `Status set to ${status}` });
     setSelectedIds(new Set());
   };
 
   const bulkUpdateOwner = async (owner: string) => {
     const ids = Array.from(selectedIds);
     const value = owner === "unassigned" ? null : owner;
-    await supabase.from("leads").update({ contact_owner: value, updated_at: new Date().toISOString() }).in("id", ids);
-    setLeads((prev) => prev.map((l) => (selectedIds.has(l.id) ? { ...l, contact_owner: value } : l)));
-    toast({ title: `Reassigned ${ids.length} contacts`, description: owner === "unassigned" ? "Unassigned" : `Owner: ${owner}` });
+    const { data, error } = await supabase
+      .from("leads")
+      .update({ contact_owner: value, updated_at: new Date().toISOString() })
+      .in("id", ids)
+      .select("id");
+    if (error || !data?.length) {
+      toast({ title: "Bulk reassign failed", description: error?.message || "Permission denied", variant: "destructive" });
+      return;
+    }
+    const updatedIds = new Set(data.map((r: any) => r.id));
+    setLeads((prev) => prev.map((l) => (updatedIds.has(l.id) ? { ...l, contact_owner: value } : l)));
+    toast({ title: `Reassigned ${data.length} contacts`, description: owner === "unassigned" ? "Unassigned" : `Owner: ${owner}` });
     setSelectedIds(new Set());
   };
 
