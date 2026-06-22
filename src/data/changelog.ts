@@ -20,6 +20,13 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     date: "2026-06-22",
+    version: "v2.1.3",
+    items: [
+      { category: "fix", text: "Lead status changes now always persist — status updates go through a dedicated server function that bypasses the CAPI tracking trigger entirely, removing the last path by which a background tracking failure could silently undo a status change" },
+    ],
+  },
+  {
+    date: "2026-06-22",
     version: "v2.1.2",
     items: [
       { category: "fix", text: "Lead status changes now persist after page refresh — the Meta CAPI tracking trigger was silently rolling back every status update when it encountered an error, leaving the database unchanged while the UI showed success" },
