@@ -381,12 +381,11 @@ const Contacts = () => {
   };
 
   const updateStatus = async (leadId: string, newStatus: string) => {
-    const { data, error } = await supabase
-      .from("leads")
-      .update({ lead_status: newStatus, updated_at: new Date().toISOString() })
-      .eq("id", leadId)
-      .select("id");
-    if (error || !data?.length) {
+    const { data, error } = await supabase.rpc("update_lead_status", {
+      p_lead_id: leadId,
+      p_status: newStatus,
+    });
+    if (error || !data) {
       toast({ title: "Update failed", description: error?.message || "Permission denied", variant: "destructive" });
       return;
     }
