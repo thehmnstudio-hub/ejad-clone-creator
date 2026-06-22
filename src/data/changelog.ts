@@ -19,6 +19,13 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: "2026-06-22",
+    version: "v2.1.2",
+    items: [
+      { category: "fix", text: "Kanban and pipeline views: moving a lead or deal to a new status now correctly persists after page refresh — was silently failing when the database rejected the update without showing an error" },
+    ],
+  },
+  {
     date: "2026-06-21",
     version: "v2.1.1",
     items: [
