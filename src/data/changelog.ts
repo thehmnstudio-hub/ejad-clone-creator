@@ -22,7 +22,8 @@ export const changelog: ChangelogEntry[] = [
     date: "2026-06-22",
     version: "v2.1.2",
     items: [
-      { category: "fix", text: "Kanban and pipeline views: moving a lead or deal to a new status now correctly persists after page refresh — was silently failing when the database rejected the update without showing an error" },
+      { category: "fix", text: "Lead status changes now persist after page refresh — the Meta CAPI tracking trigger was silently rolling back every status update when it encountered an error, leaving the database unchanged while the UI showed success" },
+      { category: "fix", text: "Kanban and pipeline views: moving a lead or deal to a new status now shows an error toast if the database rejects the write, instead of showing false success" },
       { category: "fix", text: "Lead drawer: changes to follow-up date and pain point now show an error if the save is rejected, instead of silently failing" },
       { category: "fix", text: "Contacts bulk status and owner reassignment now shows an error when the update fails, and only applies the change to rows that were actually updated" },
     ],
