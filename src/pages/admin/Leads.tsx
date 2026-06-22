@@ -104,7 +104,15 @@ const Leads = () => {
   }, [page, pageSize, funnelFilter, statusFilter, search]);
 
   const updateStatus = async (leadId: string, newStatus: string) => {
-    await supabase.from("leads").update({ lead_status: newStatus, updated_at: new Date().toISOString() }).eq("id", leadId);
+    const { data, error } = await supabase
+      .from("leads")
+      .update({ lead_status: newStatus, updated_at: new Date().toISOString() })
+      .eq("id", leadId)
+      .select("id");
+    if (error || !data?.length) {
+      toast({ title: "Update failed", description: error?.message || "Permission denied", variant: "destructive" });
+      return;
+    }
     setLeads((prev) => prev.map((l) => (l.id === leadId ? { ...l, lead_status: newStatus } : l)));
     if (selectedLead?.id === leadId) setSelectedLead({ ...selectedLead, lead_status: newStatus });
   };

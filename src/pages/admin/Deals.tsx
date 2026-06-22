@@ -181,17 +181,18 @@ const Deals = () => {
       updates.status = (stage.win_probability ?? 0) >= 100 ? "won" : "lost";
       updates.closed_at = new Date().toISOString();
     }
+    const { data, error } = await supabase.from("deals").update(updates).eq("id", dealId).select("id");
+    if (error || !data?.length) {
+      toast({ title: "Failed to move deal", description: error?.message || "Permission denied", variant: "destructive" });
+      void load();
+      return;
+    }
     setDeals((prev) =>
       stage?.is_terminal
         ? prev.filter((d) => d.id !== dealId)
         : prev.map((d) => d.id === dealId ? { ...d, stage_id: newStageId } : d)
     );
-    const { error } = await supabase.from("deals").update(updates).eq("id", dealId);
-    if (error) {
-      toast({ title: "Failed to move deal", description: error.message, variant: "destructive" });
-      void load();
-    }
-  }, [stages, toast]);
+  }, [stages, toast, load]);
 
   const moveStage = useCallback(async (dealId: string, newStageId: string, resolvedLossReason?: string) => {
     const stage = stages.find((s) => s.id === newStageId);
