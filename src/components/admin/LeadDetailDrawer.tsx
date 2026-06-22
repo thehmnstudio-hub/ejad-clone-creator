@@ -100,8 +100,15 @@ export function LeadDetailDrawer({ lead, open, onClose, onStatusChange }: LeadDe
   const saveRevOpsField = async (field: string, value: string) => {
     if (!lead) return;
     setSavingRevOps(true);
-    await supabase.from("leads").update({ [field]: value || null, updated_at: new Date().toISOString() }).eq("id", lead.id);
+    const { data, error } = await supabase
+      .from("leads")
+      .update({ [field]: value || null, updated_at: new Date().toISOString() })
+      .eq("id", lead.id)
+      .select("id");
     setSavingRevOps(false);
+    if (error || !data?.length) {
+      toast({ title: "Save failed", description: error?.message || "Permission denied", variant: "destructive" });
+    }
   };
 
   // Status change with gates
