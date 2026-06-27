@@ -60,6 +60,7 @@ const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const Payment = lazy(() => import("./pages/Payment"));
+const OnboardingForm = lazy(() => import("./pages/OnboardingForm"));
 const AdminLogin = lazy(() => import("./pages/admin/Login"));
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
 const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
@@ -135,6 +136,8 @@ const App = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/payment" element={<Payment />} />
+            <Route path="/onboarding/:slug" element={<OnboardingForm />} />
+            <Route path="/onboarding/:slug/progress/:token" element={<OnboardingForm />} />
             <Route path="/settings/lead-configuration/lead-types" element={<LeadTypes />} />
 
             {/* Admin Portal */}
