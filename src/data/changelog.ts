@@ -19,6 +19,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: "2026-06-27",
+    version: "v2.2.0",
+    items: [
+      { category: "feature", text: "Onboarding form at /onboarding/:slug — seller onboarding submissions are saved via a server-side function that bypasses client RLS, with password fields encrypted before storage and a portal link generated for tracking progress" },
+    ],
+  },
+  {
+    date: "2026-06-22",
+    version: "v2.1.3",
+    items: [
+      { category: "fix", text: "Lead status changes now always persist — status updates go through a dedicated server function that bypasses the CAPI tracking trigger entirely, removing the last path by which a background tracking failure could silently undo a status change" },
+    ],
+  },
+  {
     date: "2026-06-22",
     version: "v2.1.3",
     items: [
