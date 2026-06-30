@@ -19,6 +19,13 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: "2026-06-30",
+    version: "v2.2.1",
+    items: [
+      { category: "improvement", text: "Onboarding start and success pages redesigned with animated dark UI — floating ambient orbs, gradient headlines, shimmer CTA button, and a step-by-step success timeline with animated checkmark" },
+    ],
+  },
+  {
     date: "2026-06-27",
     version: "v2.2.0",
     items: [
